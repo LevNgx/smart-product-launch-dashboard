@@ -1,0 +1,40 @@
+name: Deploy to AWS EC2 with Docker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and Push Docker image
+        run: |
+          docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/smart-product-launch-dashboard .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/smart-product-launch-dashboard
+
+      - name: SSH and deploy to AWS EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_IP }}
+          username: ${{ secrets.AWS_SSH_USERNAME }}
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/smart-product-launch-dashboard
+            docker stop launchpad-app || true
+            docker rm launchpad-app || true
+            docker run -d -p 80:80 --name launchpad-app ${{ secrets.DOCKERHUB_USERNAME }}/smart-product-launch-dashboard
