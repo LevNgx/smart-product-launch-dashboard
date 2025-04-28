@@ -21,7 +21,7 @@ function DashBoardPage() {
 
               <div className="card ideas-ready">
                   <p>Ideas Ready</p>
-                  <p>1</p>
+                  <p>5</p>
               </div>
 
               <div className="card ideas-in-progress">
