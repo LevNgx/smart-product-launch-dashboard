@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashBoardPage from './pages/DashBoardPage';
 import SubmitIdeaPage from './pages/SubmitIdeaPage';
+import ProtectedRoute from './route-guard/ProtectedRoute';
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -19,15 +20,15 @@ function App() {
       <div style={styles.appWrapper}>
        {!hideNavbar && <header style={styles.header}>
           <div style={styles.navLeft}>
-            <Link to="/dashboard" style={styles.navLink}>Dashboard</Link>
-            <Link to="/submit-idea" style={styles.navLink}>Submit Idea</Link>
+            <Link to="/dashboard" style={styles.navLink}>LaunchPad</Link>
+            {/* <Link to="/submit-idea" style={styles.navLink}>Submit Idea</Link> */}
           </div>
           <div style={styles.navRight}>
             <div style={styles.hamburger} onClick={toggleMenu}>☰</div>
             {menuOpen && (
               <div style={styles.dropdown}>
-                <Link to="/" style={styles.dropdownLink}>Login</Link>
-                <Link to="/register" style={styles.dropdownLink}>Register</Link>
+                <Link to="/" style={styles.dropdownLink}>Logout</Link>
+                {/* <Link to="/register" style={styles.dropdownLink}>Register</Link> */}
               </div>
             )}
           </div>
@@ -37,8 +38,18 @@ function App() {
           <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/dashboard" element={<DashBoardPage />} />
-            <Route path="/submit-idea" element={<SubmitIdeaPage />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <DashBoardPage />
+              </ProtectedRoute>
+              
+              } />
+            <Route path="/submit-idea" element={
+              <ProtectedRoute>
+                 <SubmitIdeaPage />
+              </ProtectedRoute>
+             
+              } />
           </Routes>
         </main>
       </div>

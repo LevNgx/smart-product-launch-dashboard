@@ -107,4 +107,46 @@
     background-color: #d4edda;
     color: #155724;
   }
+
+  .card {
+    cursor: pointer;
+  }
+  
+  .selected-card {
+    border: 2px solid #2C3E50;
+    transform: scale(1.05);
+  }
+  
+
+  .clear-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .idea-button{
+    background-color: #354b60;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .idea-button:hover{
+    background-color: #1e2a37;
+  }
+
+
+  
+  .clear-button:hover {
+    background-color: #c0392b;
+  }
   

@@ -1,10 +1,13 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const { loggedInUser,login,logout, } = useAppContext();
+  const navigate = useNavigate();
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -24,9 +27,14 @@ function LoginPage() {
 
     // Clear error if everything is fine
     setErrorMessage("");
-
-    // Later connect to backend here
-    console.log("Login attempted with:", email, password);
+    if(login(email, password)){
+      navigate('/dashboard');
+    }
+    else {
+      setErrorMessage('User is not registered yet!')
+    }
+    
+    // console.log("Login attempted with:", email, password);
   }
 
   return (
@@ -44,7 +52,10 @@ function LoginPage() {
         type="text" 
         placeholder="Email" 
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => {
+          setEmail(e.target.value)
+          setErrorMessage('');
+        }}
         style={styles.input}
         
       />
@@ -54,7 +65,10 @@ function LoginPage() {
         type="password" 
         placeholder="Password" 
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(e) => {
+          setPassword(e.target.value)
+          setErrorMessage('');
+        }}
         style={styles.input}
         
       />
