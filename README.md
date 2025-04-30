@@ -10,6 +10,15 @@ A full-stack, real-world dashboard app to manage product ideas, track their stat
 
 (http://43.204.107.137/) 
 
+## 🧪 Demo Credentials
+
+To explore the dashboard, use the following dummy login:
+
+- **Email:** demo@launchpad.com  
+- **Password:** test123
+
+Note: This is a mock user with limited access just for demo purposes.
+
 Deployed on AWS EC2, Dockerized, and auto-deployed using GitHub Actions.
 
 🛠️ Tech Stack
