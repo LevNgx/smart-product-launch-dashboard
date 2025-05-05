@@ -14,8 +14,8 @@ A full-stack, real-world dashboard app to manage product ideas, track their stat
 
 To explore the dashboard, use the following dummy login:
 
-- **Email:** demo@launchpad.com  
-- **Password:** test123
+- **Email:** user@gmail.com
+- **Password:** user123
 
 Note: This is a mock user with limited access just for demo purposes.
 
