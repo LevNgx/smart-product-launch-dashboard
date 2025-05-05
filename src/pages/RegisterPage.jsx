@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
+import api from "../api/api";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ function RegisterPage() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const {addUser} = useAppContext();
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !email || !password) {
       setError("Please fill out all fields.");
@@ -26,13 +27,28 @@ function RegisterPage() {
 
     console.log("New user registered:", { name, email, password });
     // Later we'll save the user in context/database
-    addUser({
-      id: Math.random()*10,
-      email,
-      password,
-      name
-    });
-    navigate("/");
+
+    try{
+        const response = await api.post('auth/register', {
+            name,
+            email,
+            password
+        })
+        navigate("/");
+        const user = response.data;
+        
+    }
+    catch(err){
+        if(err && err.response && err.response.data && err.response.data.error){
+          setError(err.response.data.error);
+        }
+        else {
+          setError("Registration failed. Please try again.");
+        }
+        
+    }
+
+  
   };
 
   return (
@@ -47,7 +63,10 @@ function RegisterPage() {
           type="text"
           placeholder="Full Name*"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setError('')
+            setName(e.target.value)
+          }}
           style={styles.input}
         />
 
@@ -55,7 +74,10 @@ function RegisterPage() {
           type="text"
           placeholder="Email*"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setError('')
+            setEmail(e.target.value)
+          }}
           style={styles.input}
         />
 
@@ -63,7 +85,10 @@ function RegisterPage() {
           type="password"
           placeholder="Password*"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setError('')
+            setPassword(e.target.value)
+          }}
           style={styles.input}
         />
 

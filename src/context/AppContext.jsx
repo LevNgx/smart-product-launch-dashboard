@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useMemo } from "react";
 import { users as dummyUsers, ideas as dummyIdeas } from "../data/dummyData";
+import api from "../api/api";
 
 // 1. Create context
 const AppContext = createContext();
@@ -20,17 +21,44 @@ export function AppProvider({ children }) {
   const [filterStatus, setFilterStatus] = useState("");
 
   // Login logic
-  const login = (email, password) => {
-    const user = allUsers.find(
-      (u) => u.email === email && u.password === password
-    );
-    if (user) {
+  const login = async (email, password) => {
+
+    try{
+      const response = await api.post('/auth/login', {
+        email,
+        password
+      })
+
+      // response return both token and the user data on successul login
+      var token = response.data.token
+      var user = response.data.user
+
       setLoggedInUser(user);
+      localStorage.setItem("token", token)
+      
       return true;
-    } else {
-      return false;
     }
+    catch(err){
+      console.log(err)
+      if(err && err.response && err.data){
+        return false;
+      }
+    }
+   
+   
   };
+
+  //fetch ideas bases on user id api 
+  const fetchUserIdeas = async (userId) => {
+    try{
+      const resp = await api.get(`/ideas/user/${userId}`);
+      console.log("setting ideas here", resp.data)
+      setAllIdeas(resp.data);
+    }
+    catch(err){
+      console.error("Error fetching user ideas", err);
+    }
+  }
 
   // Logout
   const logout = () => {
@@ -38,8 +66,15 @@ export function AppProvider({ children }) {
   };
 
   // Add a new idea
-  const addIdea = (newIdea) => {
-    setAllIdeas((prevIdeas) => [...prevIdeas, newIdea]);
+  const addIdea = async (newIdea) => {
+    const {title,description,status, user} = newIdea;
+    await api.post('/ideas',{
+      title,
+      description,
+      status,
+      userId:user.id
+    })
+    await fetchUserIdeas(loggedInUser.id);
   };
 
   const addUser = (newUser) => {
@@ -51,7 +86,7 @@ export function AppProvider({ children }) {
   const filteredIdeas = useMemo(() => {
     if (!loggedInUser) return [];
     const userIdeas = allIdeas.filter(
-      (idea) => idea.userId === loggedInUser.id
+      (idea) => idea.user?.id === loggedInUser.id
     );
     if (!filterStatus) return userIdeas;
     return userIdeas.filter((idea) => idea.status === filterStatus);
@@ -69,7 +104,8 @@ export function AppProvider({ children }) {
         filterStatus,
         setFilterStatus,
         filteredIdeas,
-        addUser
+        addUser,
+        fetchUserIdeas
       }}
     >
       {children}

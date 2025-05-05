@@ -1,14 +1,19 @@
 import '../styles/DashBoard.css';
+import '../App.css'
 import { useAppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import Loader from '../components/Loader';
 
 function DashBoardPage() {
-  const { allIdeas, filteredIdeas, setFilterStatus, filterStatus, loggedInUser } = useAppContext();
+  const { allIdeas, filteredIdeas, setFilterStatus, filterStatus, loggedInUser, fetchUserIdeas } = useAppContext();
   const navigate = useNavigate();
   // Count each status type from allIdeas (not filtered)
-  const submittedCount = allIdeas.filter(idea => idea.status === "Submitted" && idea.userId === loggedInUser.id).length;
-  const inProgressCount = allIdeas.filter(idea => idea.status === "In Progress" && idea.userId === loggedInUser.id).length;
-  const launchReadyCount = allIdeas.filter(idea => idea.status === "Launch Ready" && idea.userId === loggedInUser.id).length;
+  const submittedCount = allIdeas.filter(idea => idea.status === "Submitted" && idea.user?.id === loggedInUser.id).length;
+  const inProgressCount = allIdeas.filter(idea => idea.status === "In Progress" && idea.user?.id === loggedInUser.id).length;
+  const launchReadyCount = allIdeas.filter(idea => idea.status === "Launch Ready" && idea.user?.id === loggedInUser.id).length;
+  console.log("all ideas" , allIdeas)
+  const [loading, setLoading] = useState(true);
 
   const handleFilter = (status) => {
     if (filterStatus === status) {
@@ -18,12 +23,23 @@ function DashBoardPage() {
     }
   };
 
+  //effect to call ideas per user api and to populate ideas
+  useEffect(() => {
+    async function loadIdeas() {
+      if (loggedInUser) {
+        await fetchUserIdeas(loggedInUser.id);
+        setLoading(false);  // will now run after API call finishes
+      }
+    }
+    loadIdeas();
+  }, [loggedInUser]);
+
   const clearFilter = () => setFilterStatus("");
   const navigateToSubmitPage = ()  => navigate('/submit-idea')
 
-  return (
-    <div className="dashboard-container">
-      <h1 className="welcome-heading">Welcome back {loggedInUser && loggedInUser.name} !</h1>
+  return loading ? (<Loader/>) : (
+   <div className="dashboard-container">
+      <h1 className="welcome-heading">Welcome back {loggedInUser?.name} !</h1>
       <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '20px' }}>
         
         <button className='idea-button' onClick={navigateToSubmitPage}>Submit new idea!</button>

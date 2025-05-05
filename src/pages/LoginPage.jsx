@@ -9,7 +9,7 @@ function LoginPage() {
   const { loggedInUser,login,logout, } = useAppContext();
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     // Email regex validation
@@ -25,13 +25,16 @@ function LoginPage() {
       return;
     }
 
+    // const message = await login();
+
     // Clear error if everything is fine
     setErrorMessage("");
-    if(login(email, password)){
+
+    if(await login(email, password)){
       navigate('/dashboard');
     }
     else {
-      setErrorMessage('User is not registered yet!')
+      setErrorMessage('User is not registered or credentials are invalid')
     }
     
     // console.log("Login attempted with:", email, password);

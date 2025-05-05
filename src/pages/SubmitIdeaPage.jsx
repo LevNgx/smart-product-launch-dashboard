@@ -30,8 +30,7 @@ function SubmitIdeaPage() {
       status,
       launchDate,
       priority,
-      userEmail: loggedInUser.email,
-      userId: loggedInUser.id
+      user: {id:loggedInUser.id}
     };
 
     addIdea(newIdea);
